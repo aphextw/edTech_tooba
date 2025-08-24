@@ -26,6 +26,7 @@ export default function TabLayout() {
                 tabBarStyle: {
                     shadowColor: "#000",
                     elevation: 5,
+                    height: 87,
                 },
             }}>
             <Tabs.Screen
@@ -45,6 +46,20 @@ export default function TabLayout() {
                 name="profilePage"
                 options={{
                     title: 'Профиль',
+                    tabBarIcon: ({focused}) => (
+                        <FontAwesome
+                            name="user"
+                            size={24}
+                            color={focused ? "#F73D48" : "#B1B1B1"}
+                        />
+                    ),
+                }}
+            />
+            <Tabs.Screen
+                name="chat"
+                options={{
+                    title: 'чат',
+                    href: null,
                     tabBarIcon: ({focused}) => (
                         <FontAwesome
                             name="user"

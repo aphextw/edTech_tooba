@@ -6,13 +6,13 @@ import {
     TextInput,
     TouchableOpacity,
     useColorScheme,
-    // ThemedText,
-    // ThemedView,
     Alert,
     KeyboardAvoidingView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomInput from "../../components/input";
+import {ThemedView} from '@/components/ThemedView';
+import {ThemedText} from '@/components/ThemedText';
 import {Image} from 'expo-image';
 
 import {useRouter} from 'expo-router';
@@ -57,6 +57,7 @@ function WelcomeScreen() {
         checkLoginStatus();
     }, []);
 
+
     const handleNext = async () => {
         if (currentStep === 1) {
             if (!userRole) {
@@ -85,7 +86,7 @@ function WelcomeScreen() {
         if (currentStep < steps.length - 1) {
             setCurrentStep(currentStep + 1);
         } else {
-            router.push('./user');
+            router.replace('./user');
         }
     };
 
@@ -110,7 +111,7 @@ function WelcomeScreen() {
     };
 
     return (
-        <View style={styles.container}>
+        <ThemedView style={styles.container}>
             <View style={styles.progressContainer}>
                 {steps.map((_, index) => (
                     <View
@@ -143,11 +144,11 @@ function WelcomeScreen() {
                                 <Text style={{fontSize: 45}}>
                                     👨‍🎓
                                 </Text>
-                                <Text style={[
+                                <ThemedText style={[
                                     styles.roleButtonText,
                                 ]}>
                                     Ученик
-                                </Text>
+                                </ThemedText>
                             </TouchableOpacity>
 
                             <TouchableOpacity
@@ -157,11 +158,11 @@ function WelcomeScreen() {
                                 <Text style={{fontSize: 45}}>
                                     👩‍🏫
                                 </Text>
-                                <Text style={[
+                                <ThemedText style={[
                                     styles.roleButtonText,
                                 ]}>
                                     Учитель
-                                </Text>
+                                </ThemedText>
                             </TouchableOpacity>
                         </View>
                     )}
@@ -190,13 +191,13 @@ function WelcomeScreen() {
                         </View>
                     )}
 
-                    <Text type="title" style={[styles.title, {marginTop: currentStep === 2 ? 20 : 30}]}>
+                    <ThemedText type="title" style={[styles.title, {marginTop: currentStep === 2 ? 20 : 30}]}>
                         {steps[currentStep].title}
-                    </Text>
+                    </ThemedText>
 
-                    <Text style={[styles.description, {marginBottom: currentStep === 2 ? 40 : 30}]}>
+                    <ThemedText style={[styles.description, {marginBottom: currentStep === 2 ? 40 : 30}]}>
                         {steps[currentStep].content}
-                    </Text>
+                    </ThemedText>
 
                 </View>
 
@@ -226,7 +227,7 @@ function WelcomeScreen() {
                 </View>
             </View>
 
-        </View>
+        </ThemedView>
     );
 }
 
@@ -369,4 +370,5 @@ const styles = StyleSheet.create({
 });
 
 export default WelcomeScreen;
+
 

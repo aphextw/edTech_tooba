@@ -11,11 +11,14 @@ import {
     StyleSheet,
     SafeAreaView
 } from 'react-native';
-// import {useNavigation} from '@react-navigation/native';
-// import Feather from '@expo/vector-icons/Feather';
-// import Entypo from '@expo/vector-icons/Entypo';
-// import Octicons from '@expo/vector-icons/Octicons';
-// import {useRouter} from "expo-router";
+import {useNavigation} from '@react-navigation/native';
+import Feather from '@expo/vector-icons/Feather';
+import Entypo from '@expo/vector-icons/Entypo';
+import Octicons from '@expo/vector-icons/Octicons';
+import {useRouter} from "expo-router";
+import {ThemedView} from "../../components/ThemedView";
+import {ThemedText} from "../../components/ThemedText";
+
 
 const MainView = () => {
     const [searchText, setSearchText] = useState('');
@@ -23,15 +26,18 @@ const MainView = () => {
     const [selectedWeekday, setSelectedWeekday] = useState(new Date().getDay() || 7);
     const [selectedDay, setSelectedDay] = useState(new Date().getDate());
 
+    const router = useRouter();
+
+
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView style={styles.scrollView}>
-                <View style={styles.content}>
+                <ThemedView style={styles.content}>
                     {/* Поиск + закладки */}
                     <SearchRow searchText={searchText} setSearchText={setSearchText}/>
 
                     {/* «Спросите что-нибудь» */}
-                    <AskSection questionText={questionText} setQuestionText={setQuestionText}/>
+                    <AskSection questionText={questionText} setQuestionText={setQuestionText} router={router}/>
 
                     <View style={{paddingHorizontal: 12}}>
                         {/* Заголовок */}
@@ -60,7 +66,7 @@ const MainView = () => {
                         {/* Цифровизация лекций */}
                         <OCRCard/>
                     </View>
-                </View>
+                </ThemedView>
             </ScrollView>
         </SafeAreaView>
     );
@@ -84,7 +90,7 @@ const SearchRow = ({searchText, setSearchText}) => (
     </View>
 );
 
-const AskSection = ({questionText, setQuestionText}) => (
+const AskSection = ({questionText, setQuestionText, router}) => (
     <View style={styles.askSection}>
         <View style={{backgroundColor: "#fff", borderRadius: 16, padding: 10, paddingVertical: 5}}>
             <View>
@@ -94,6 +100,11 @@ const AskSection = ({questionText, setQuestionText}) => (
                     value={questionText}
                     onChangeText={setQuestionText}
                     placeholderTextColor="#9AA0A6"
+                    onSubmitEditing={() => {
+                        console.log("Пользователь нажал Enter/Submit");
+                        router.push('./chat');
+                    }}
+                    returnKeyType="send" // Меняет текст кнопки на клавиатуре
                 />
                 <View style={styles.askActionsRow}>
                     <TouchableOpacity
@@ -109,6 +120,7 @@ const AskSection = ({questionText, setQuestionText}) => (
                     <TouchableOpacity
                         style={styles.searchFab}
                         onPress={() => {
+                            router.push('./chat');
                         }}
                         activeOpacity={0.8}
                     >
@@ -122,10 +134,10 @@ const AskSection = ({questionText, setQuestionText}) => (
 
 // MARK: - TitleHero
 const TitleHero = () => (
-    <View style={styles.titleHero}>
+    <View style={[styles.titleHero]}>
         <Text style={styles.titleText}>
             <Text style={styles.redText}>Перемен</Text>
-            <Text> требуют{"\n"}наши сердца</Text>
+            <ThemedText style={{fontSize: 30}}> требуют{"\n"}наши сердца</ThemedText>
         </Text>
     </View>
 );
@@ -394,7 +406,6 @@ const SectionCard = ({title, subtitle, trailingIcon, content, footer}) => (
     </View>
 );
 
-// MARK: - Styles
 const styles = StyleSheet.create({
     container: {
         backgroundColor: '#FFFFFF',
@@ -405,7 +416,7 @@ const styles = StyleSheet.create({
     },
     content: {
         // paddingHorizontal: 16,
-        paddingBottom: 24,
+        paddingBottom: 10,
         paddingTop: 8,
     },
     titleHero: {
@@ -448,7 +459,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingHorizontal: 16,
         paddingVertical: 12,
-        backgroundColor: '#FFFFFF',
         marginTop: 45
     },
     searchInput: {
