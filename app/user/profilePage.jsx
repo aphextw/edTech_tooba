@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react';
 import {StyleSheet, View, Text, TouchableOpacity, Alert, ScrollView, Image} from 'react-native';
-import {useRouter} from 'expo-router';
+// import {useRouter} from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Ionicons, MaterialIcons, FontAwesome5} from '@expo/vector-icons';
 import {ThemedView} from "../../components/ThemedView";
@@ -8,7 +8,8 @@ import {ThemedView} from "../../components/ThemedView";
 export default function ProfileScreen() {
     const [username, setUsername] = useState('');
     const [userRole, setUserRole] = useState('');
-    const router = useRouter();
+
+    // const router = useRouter();
 
     useEffect(() => {
         loadUserData();
@@ -30,7 +31,7 @@ export default function ProfileScreen() {
             text: "Выйти", onPress: async () => {
                 try {
                     await AsyncStorage.multiRemove(['isLoggedIn', 'username', 'password', 'userRole']);
-                    router.replace('/');
+                    // r.replace('/');
                 } catch (error) {
                     console.error('Ошибка выхода:', error);
                     Alert.alert('Ошибка', 'Не удалось выйти из аккаунта');
@@ -118,7 +119,8 @@ const styles = StyleSheet.create({
         borderColor: '#E8E8E8',
     }, avatarContainer: {
         marginRight: 16,
-    }, avatarPlaceholder: {
+    },
+    avatarPlaceholder: {
         width: 56,
         height: 56,
         borderRadius: 28,
@@ -129,11 +131,14 @@ const styles = StyleSheet.create({
         borderColor: '#F73D48',
     }, profileInfo: {
         flex: 1,
-    }, username: {
+    },
+    username: {
         fontSize: 18, fontWeight: 'bold', color: '#333', marginBottom: 4,
-    }, class: {
+    },
+    class: {
         fontSize: 14, color: '#F73D48', fontWeight: '600',
-    }, verticalSection: {
+    },
+    verticalSection: {
         marginBottom: 30, flexDirection: 'row', gap: 16,
     }, classBlock: {
         backgroundColor: '#F7F7F7', borderRadius: 12, padding: 16, flexDirection: 'column', width: 93, height: 93,
@@ -156,7 +161,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row', alignItems: 'center', gap: 8,
     }, timerText: {
         fontSize: 16, fontWeight: '600', color: '#F73D48',
-    }, // Остальные стили
+    },
     section: {
         marginBottom: 30,
     }, sectionTitle: {

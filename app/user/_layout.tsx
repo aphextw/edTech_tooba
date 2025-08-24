@@ -1,12 +1,13 @@
-import { Tabs } from 'expo-router';
+import {Tabs} from 'expo-router';
 import React from 'react';
-import { Platform } from 'react-native';
+import {Platform} from 'react-native';
 
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
+import {HapticTab} from '@/components/HapticTab';
+import {IconSymbol} from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import {Colors} from '@/constants/Colors';
+import {useColorScheme} from '@/hooks/useColorScheme';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 export default function TabLayout() {
     const colorScheme = useColorScheme();
@@ -14,37 +15,45 @@ export default function TabLayout() {
     return (
         <Tabs
             screenOptions={{
-                tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+                tabBarActiveTintColor: "#F73D48", // Красный для активного таба
+                tabBarInactiveTintColor: "#B1B1B1", // Серый для неактивного таба
                 headerShown: false,
                 tabBarButton: HapticTab,
                 tabBarBackground: TabBarBackground,
-                tabBarStyle:
-                    Platform.select({
-                        ios: {
-                            // Use a transparent background on iOS to show the blur effect
-                            backgroundColor: "transparent",
-                            position: 'absolute',
-                        },
-                        default: {
-
-                        },
-                    }),
+                tabBarLabelStyle: {
+                    fontSize: 12,
+                },
+                tabBarStyle: {
+                    shadowColor: "#000",
+                    elevation: 5,
+                },
             }}>
             <Tabs.Screen
                 name="main"
                 options={{
                     title: 'Главная',
-                    tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+                    tabBarIcon: ({focused}) => (
+                        <IconSymbol
+                            size={28}
+                            name="house.fill"
+                            color={focused ? "#F73D48" : "#B1B1B1"}
+                        />
+                    ),
                 }}
             />
             <Tabs.Screen
                 name="profilePage"
                 options={{
                     title: 'Профиль',
-                    tabBarIcon: ({ color }) => <IconSymbol size={28} name="person" color={color} />,
+                    tabBarIcon: ({focused}) => (
+                        <FontAwesome
+                            name="user"
+                            size={24}
+                            color={focused ? "#F73D48" : "#B1B1B1"}
+                        />
+                    ),
                 }}
             />
         </Tabs>
     );
 }
-

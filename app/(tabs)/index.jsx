@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import {useState, useEffect} from 'react';
 import {
     StyleSheet,
     View,
@@ -6,16 +6,18 @@ import {
     TextInput,
     TouchableOpacity,
     useColorScheme,
-    Alert, KeyboardAvoidingView,
+    // ThemedText,
+    // ThemedView,
+    Alert,
+    KeyboardAvoidingView,
 } from 'react-native';
-import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { Image } from 'expo-image';
 import CustomInput from "../../components/input";
+import {Image} from 'expo-image';
 
-export default function WelcomeScreen() {
+import {useRouter} from 'expo-router';
+
+function WelcomeScreen() {
     const [currentStep, setCurrentStep] = useState(0);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -108,7 +110,7 @@ export default function WelcomeScreen() {
     };
 
     return (
-        <ThemedView style={styles.container}>
+        <View style={styles.container}>
             <View style={styles.progressContainer}>
                 {steps.map((_, index) => (
                     <View
@@ -141,11 +143,11 @@ export default function WelcomeScreen() {
                                 <Text style={{fontSize: 45}}>
                                     👨‍🎓
                                 </Text>
-                                <ThemedText style={[
+                                <Text style={[
                                     styles.roleButtonText,
                                 ]}>
                                     Ученик
-                                </ThemedText>
+                                </Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity
@@ -155,11 +157,11 @@ export default function WelcomeScreen() {
                                 <Text style={{fontSize: 45}}>
                                     👩‍🏫
                                 </Text>
-                                <ThemedText style={[
+                                <Text style={[
                                     styles.roleButtonText,
                                 ]}>
                                     Учитель
-                                </ThemedText>
+                                </Text>
                             </TouchableOpacity>
                         </View>
                     )}
@@ -188,13 +190,13 @@ export default function WelcomeScreen() {
                         </View>
                     )}
 
-                    <ThemedText type="title" style={[styles.title, {marginTop: currentStep === 2 ? 20 : 30}]}>
+                    <Text type="title" style={[styles.title, {marginTop: currentStep === 2 ? 20 : 30}]}>
                         {steps[currentStep].title}
-                    </ThemedText>
+                    </Text>
 
-                    <ThemedText style={[styles.description, { marginBottom: currentStep === 2 ? 40 : 30}]}>
+                    <Text style={[styles.description, {marginBottom: currentStep === 2 ? 40 : 30}]}>
                         {steps[currentStep].content}
-                    </ThemedText>
+                    </Text>
 
                 </View>
 
@@ -224,7 +226,7 @@ export default function WelcomeScreen() {
                 </View>
             </View>
 
-        </ThemedView>
+        </View>
     );
 }
 
@@ -245,7 +247,7 @@ const styles = StyleSheet.create({
         marginBottom: "4%",
         width: '50%', // Адаптивная ширина (60% от ширины родителя)
         maxWidth: 200, // Максимальная ширина
-        aspectRatio: 239/315, // Сохраняем оригинальное соотношение сторон 239:315
+        aspectRatio: 239 / 315, // Сохраняем оригинальное соотношение сторон 239:315
         resizeMode: 'contain',
     },
     progressContainer: {
@@ -365,3 +367,6 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
 });
+
+export default WelcomeScreen;
+
