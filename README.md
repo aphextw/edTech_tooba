@@ -28,7 +28,8 @@
 **Шаги:**
 1.  Клонируйте репозиторий:
     ```bash
-    git clone https://github.com/Gadzhimurad/tooba-hackathon-app.git
+    git clone https://github.com/aphextw/edTech_tooba.git/master
+)
     cd tooba-hackathon-app
     ```
 
