@@ -9,16 +9,17 @@ import {
     FlatList,
     Dimensions,
     StyleSheet,
-    SafeAreaView
+    SafeAreaView,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
 import Feather from '@expo/vector-icons/Feather';
 import Entypo from '@expo/vector-icons/Entypo';
 import Octicons from '@expo/vector-icons/Octicons';
 import {useRouter} from "expo-router";
 import {ThemedView} from "../../components/ThemedView";
 import {ThemedText} from "../../components/ThemedText";
-
+import {MaterialIcons} from "@expo/vector-icons";
+import {Ionicons} from "@expo/vector-icons";
+import Svg, {Path} from "react-native-svg";
 
 const MainView = () => {
     const [searchText, setSearchText] = useState('');
@@ -34,7 +35,7 @@ const MainView = () => {
             <ScrollView style={styles.scrollView}>
                 <ThemedView style={styles.content}>
                     {/* Поиск + закладки */}
-                    <SearchRow searchText={searchText} setSearchText={setSearchText}/>
+                    <SearchRow searchText={searchText} setSearchText={setSearchText} router={router}/>
 
                     {/* «Спросите что-нибудь» */}
                     <AskSection questionText={questionText} setQuestionText={setQuestionText} router={router}/>
@@ -57,11 +58,12 @@ const MainView = () => {
                         {/* Учебные материалы */}
                         <MaterialsCarousel/>
 
+                        {/* Оценки */}
+                        <GradesCard router={router}/>
+
                         {/* Домашняя работа */}
                         <HomeworkCard/>
 
-                        {/* Оценки */}
-                        <GradesCard onAllTap={() => navigation.navigate('Grades')}/>
 
                         {/* Цифровизация лекций */}
                         <OCRCard/>
@@ -72,7 +74,7 @@ const MainView = () => {
     );
 };
 
-const SearchRow = ({searchText, setSearchText}) => (
+const SearchRow = ({searchText, setSearchText, router}) => (
     <View style={styles.searchRow}>
         <View style={styles.searchInputContainer}>
             <TextInput
@@ -84,8 +86,10 @@ const SearchRow = ({searchText, setSearchText}) => (
             />
         </View>
 
-        <TouchableOpacity style={styles.bellButton}>
-            <Octicons name="bell-fill" size={24} color="black"/>
+        <TouchableOpacity style={styles.bellButton} onPress={() => {
+            router.replace("./notification")
+        }}>
+            <Octicons name="bell-fill" size={24} style={{transform: [{rotate: '45deg'}]}} color="black"/>
         </TouchableOpacity>
     </View>
 );
@@ -120,7 +124,7 @@ const AskSection = ({questionText, setQuestionText, router}) => (
                     <TouchableOpacity
                         style={styles.searchFab}
                         onPress={() => {
-                            router.push('./chat');
+                            router.push("./chat")
                         }}
                         activeOpacity={0.8}
                     >
@@ -132,19 +136,40 @@ const AskSection = ({questionText, setQuestionText, router}) => (
     </View>
 );
 
-// MARK: - TitleHero
 const TitleHero = () => (
-    <View style={[styles.titleHero]}>
+    <View style={styles.titleHero}>
         <Text style={styles.titleText}>
-            <Text style={styles.redText}>Перемен</Text>
-            <ThemedText style={{fontSize: 30}}> требуют{"\n"}наши сердца</ThemedText>
+            <Text style={styles.redText}>Перемен </Text>
+            <ThemedText style={styles.titleText}>требуют</ThemedText>
         </Text>
+        <ThemedText style={styles.titleText}>
+            наши сердца
+        </ThemedText>
     </View>
 );
 
 const FactOfTheDayCard = () => (
-    <View style={styles.card}>
-        <Text style={styles.cardTitle}>Факт дня</Text>
+    <View style={styles.wrap}>
+        <View style={styles.imgOuter}>
+            <View style={styles.imgInner}>
+                <Image source={require('../../assets/images/image 1.png')} style={styles.img}/>
+            </View>
+        </View>
+
+        <View style={styles.panel}>
+            <Image
+                source={require('../../assets/images/Vector 3.png')}
+                style={styles.backgroundImage}
+            />
+
+            <View style={styles.textRow}>
+                <MaterialIcons name="lightbulb" size={20} color="#F73D48" style={{marginRight: 8, marginTop: 2}}/>
+                <View style={{flex: 1}}>
+                    <Text style={styles.title}>Факт дня</Text>
+                    <Text style={styles.subtitle}>Пётр 1 никогда не ел шоколад</Text>
+                </View>
+            </View>
+        </View>
     </View>
 );
 
@@ -328,7 +353,7 @@ const HomeworkRow = ({text, title}) => (
 );
 
 // MARK: - GradesCard
-const GradesCard = ({onAllTap}) => {
+const GradesCard = ({onAllTap, router}) => {
     const grades = [
         {id: '1', name: "Русский язык", value: "4.3"},
         {id: '2', name: "Математика", value: "5.0"},
@@ -357,7 +382,9 @@ const GradesCard = ({onAllTap}) => {
             footer={
                 <PrimaryButton
                     title="Посмотреть все оценки"
-                    onPress={onAllTap}
+                    onPress={() => {
+                        router.replace('./grades')
+                    }}
                 />
             }
         />
@@ -407,6 +434,65 @@ const SectionCard = ({title, subtitle, trailingIcon, content, footer}) => (
 );
 
 const styles = StyleSheet.create({
+    wrap: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 4,
+        marginBottom: 28,
+        gap: 12,
+    },
+    imgOuter: {
+        borderColor: '#F73D48',
+        borderRadius: 16,
+        borderWidth: 2,
+        padding: 2,
+    },
+    imgInner: {
+        borderRadius: 12,
+        borderWidth: 2,
+        borderColor: '#FFFFFF',
+        overflow: 'hidden',
+    },
+    img: {
+        width: 86,
+        height: 110,
+        borderRadius: 10,
+        resizeMode: 'cover'
+    },
+    panel: {
+        flex: 1,
+        minHeight: 120,
+        backgroundColor: '#F7F7F7',
+        borderRadius: 16,
+        overflow: 'hidden',
+        justifyContent: 'center',
+        padding: 16,
+        position: 'relative', // важно для позиционирования фона
+    },
+    backgroundImage: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '135%',
+        height: '130%',
+        resizeMode: 'cover', // растягиваем на весь фон
+    },
+    textRow: {
+        alignItems: 'flex-start',
+        zIndex: 1, // чтобы текст был поверх фона
+    },
+    title: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#000000',
+    },
+    subtitle: {
+        fontSize: 14,
+        color: '#666666',
+    },
+
     container: {
         backgroundColor: '#FFFFFF',
         flex: 1,
@@ -420,7 +506,11 @@ const styles = StyleSheet.create({
         paddingTop: 8,
     },
     titleHero: {
-        marginBottom: 20,
+        marginBottom: 28,
+    },
+    subtitleText: {
+        fontSize: 30,
+        lineHeight: 36, // добавьте lineHeight для лучшего отображения
     },
     titleText: {
         fontSize: 32,

@@ -8,6 +8,7 @@ import TabBarBackground from '@/components/ui/TabBarBackground';
 import {Colors} from '@/constants/Colors';
 import {useColorScheme} from '@/hooks/useColorScheme';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 export default function TabLayout() {
     const colorScheme = useColorScheme();
@@ -43,6 +44,15 @@ export default function TabLayout() {
                 }}
             />
             <Tabs.Screen
+                name="study"
+                options={{
+                    title: 'Учеба',
+                    tabBarIcon: ({focused}) => (
+                        <MaterialCommunityIcons name="school" size={26} color={focused ? "#F73D48" : "#B1B1B1"}/>
+                    ),
+                }}
+            />
+            <Tabs.Screen
                 name="profilePage"
                 options={{
                     title: 'Профиль',
@@ -69,6 +79,35 @@ export default function TabLayout() {
                     ),
                 }}
             />
+            <Tabs.Screen
+                name="grades"
+                options={{
+                    title: 'чат',
+                    href: null,
+                    tabBarIcon: ({focused}) => (
+                        <FontAwesome
+                            name="user"
+                            size={24}
+                            color={focused ? "#F73D48" : "#B1B1B1"}
+                        />
+                    ),
+                }}
+            />
+            <Tabs.Screen
+                name="notification"
+                options={{
+                    title: 'чаты',
+                    href: null,
+                    tabBarIcon: ({focused}) => (
+                        <FontAwesome
+                            name="user"
+                            size={24}
+                            color={focused ? "#F73D48" : "#B1B1B1"}
+                        />
+                    ),
+                }}
+            />
+
         </Tabs>
     );
 }

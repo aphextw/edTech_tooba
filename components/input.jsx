@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import {useState} from 'react';
 import {
     StyleSheet,
     View,
@@ -70,6 +70,7 @@ const styles = StyleSheet.create({
         color: '#fff',
     },
     input: {
+        outlineStyle: 'none',
         borderRadius: 8,
         width: '100%',
         minHeight: 50,

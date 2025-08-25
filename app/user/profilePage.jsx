@@ -1,190 +1,309 @@
 import {useState, useEffect} from 'react';
-import {StyleSheet, View, Text, TouchableOpacity, Alert, ScrollView, Image} from 'react-native';
+import {StyleSheet, View, Text, TouchableOpacity, Alert, ScrollView} from 'react-native';
 import {useRouter} from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Ionicons, MaterialIcons, FontAwesome5} from '@expo/vector-icons';
-import {ThemedView} from "../../components/ThemedView";
+import {ThemedView} from '../../components/ThemedView';
+import Octicons from "@expo/vector-icons/Octicons";
+import AntDesign from '@expo/vector-icons/AntDesign';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 export default function ProfileScreen() {
     const [username, setUsername] = useState('');
     const [userRole, setUserRole] = useState('');
-
     const router = useRouter();
 
     useEffect(() => {
-        loadUserData();
+        (async () => {
+            try {
+                const savedUsername = await AsyncStorage.getItem('username');
+                const savedUserRole = await AsyncStorage.getItem('userRole');
+                if (savedUsername) setUsername(savedUsername);
+                if (savedUserRole) setUserRole(savedUserRole);
+            } catch (e) {
+                console.error('Ошибка загрузки данных:', e);
+            }
+        })();
     }, []);
 
-    const loadUserData = async () => {
-        try {
-            const savedUsername = await AsyncStorage.getItem('username');
-            const savedUserRole = await AsyncStorage.getItem('userRole');
-            if (savedUsername) setUsername(savedUsername);
-            if (savedUserRole) setUserRole(savedUserRole);
-        } catch (error) {
-            console.error('Ошибка загрузки данных:', error);
-        }
-    };
-
     const handleLogout = async () => {
-        Alert.alert("Выход", "Вы уверены, что хотите выйти из аккаунта?", [{text: "Отмена", style: "cancel"}, {
-            text: "Выйти", onPress: async () => {
-                try {
-                    await AsyncStorage.multiRemove(['isLoggedIn', 'username', 'password', 'userRole']);
-                    router.replace('/');
-                } catch (error) {
-                    console.error('Ошибка выхода:', error);
-                    Alert.alert('Ошибка', 'Не удалось выйти из аккаунта');
-                }
-            }
-        }]);
+
+        try {
+            await AsyncStorage.multiRemove(['isLoggedIn', 'username', 'password', 'userRole']);
+            router.replace('/');
+        } catch (e) {
+            console.error('Ошибка выхода:', e);
+            Alert.alert('Ошибка', 'Не удалось выйти из аккаунта');
+        }
+
     };
 
     return (
         <ThemedView style={styles.container}>
-            <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
-                <View style={styles.profileBlock}>
-                    <View style={styles.avatarContainer}>
-                        <View style={styles.avatarPlaceholder}>
-                            <Ionicons name="person" size={32} color="#F73D48"/>
-                        </View>
+            <ScrollView showsVerticalScrollIndicator={false}>
+                {/* Карточка профиля */}
+                <TouchableOpacity style={styles.profileCard} activeOpacity={0.8}>
+                    <View style={styles.avatar}>
+                        <Ionicons name="person" size={22} color="#b6b6b6"/>
                     </View>
-                    <View style={styles.profileInfo}>
-                        <Text style={styles.username}>{username || 'Иван Иванов'}</Text>
-                        <Text style={styles.class}>11-А класс</Text>
+                    <View style={{flex: 1}}>
+                        <Text style={styles.profileName}>{username || 'Рамазанов М.'}</Text>
+                        <Text style={styles.profileClass}>Класс 11‑В</Text>
                     </View>
+                    <Ionicons name="chevron-forward" size={20} color="#F73D48"/>
+                </TouchableOpacity>
+
+                {/* Сетка информеров */}
+                <View style={styles.gridRow}>
+                    <InfoTile
+                        icon={<FontAwesome5 name="school" size={22} color="#F73D48"/>}
+                        title="Мой класс"
+                        subtitle="21 ученик"
+                    />
+                    <InfoTile
+                        wide
+                        icon={<Octicons name="bell-fill" size={20} style={{transform: [{rotate: '45deg'}]}}
+                                        color="#F73D48"/>}
+                        title="Расписание"
+                        subtitle="До следующего урока 12 минут"
+                        right={<FontAwesome5 name="bell" size={14} color="#F73D48"/>}
+                    />
                 </View>
 
-                <View style={styles.verticalSection}>
-                    <TouchableOpacity style={styles.classBlock}>
-                        <Ionicons name="school-outline" size={24} color="#F73D48"/>
-                        <Text style={styles.blockTitle}>Мой класс</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.scheduleBlock}>
-                        <View style={styles.blockHeader}>
-                            <Ionicons name="time-outline" size={24} color="#F73D48"/>
-                            <Text style={styles.blockTitle}>Расписание</Text>
-                        </View>
-                        <View style={styles.blockContent}>
-                            <Text style={styles.scheduleInfo}>До следующего урока</Text>
-                            <View style={styles.timerContainer}>
-                                <FontAwesome5 name="bell" size={16} color="#F73D48"/>
-                                <Text style={styles.timerText}>12 минут</Text>
-                            </View>
-                        </View>
-                    </TouchableOpacity>
+                <View style={styles.gridRow}>
+                    <InfoTile
+                        icon={<AntDesign name="like1" size={24} color="#F73D48"/>}
+                        title="Программа"
+                        subtitle="12 предметов"
+                        small
+                    />
+                    <InfoTile
+                        icon={<FontAwesome5 name="medal" size={21} color="#F73D48"/>}
+                        title="4.8"
+                        subtitle="Средняя оценка"
+                        small
+                    />
+                    <InfoTile
+                        icon={<MaterialCommunityIcons name="school" size={26} color="#F73D48"/>}
+                        title="Курсы"
+                        subtitle="4 добавлено"
+                        small
+                    />
                 </View>
 
-                {/* Остальные настройки */}
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Настройки</Text>
+                {/* Раздел: Настройки */}
+                <SectionCard title="Настройки">
+                    <RowItem title="Уведомления" onPress={() => {
+                    }}>
+                        <Ionicons name="chevron-forward" size={18} color="#C1C7CD"/>
+                    </RowItem>
+                    <RowDivider/>
+                    <RowItem title="Конфиденциальность" onPress={() => {
+                    }}>
+                        <Ionicons name="chevron-forward" size={18} color="#C1C7CD"/>
+                    </RowItem>
+                </SectionCard>
 
-                    <TouchableOpacity style={styles.optionButton}>
-                        <Ionicons name="key-outline" size={20} color="#555"/>
-                        <Text style={styles.optionText}>Сменить пароль</Text>
-                    </TouchableOpacity>
+                {/* Раздел: Поддержка */}
+                <SectionCard title="Поддержка">
+                    <RowItem title="Не могу войти" onPress={() => {
+                    }}>
+                        <Ionicons name="chevron-forward" size={18} color="#C1C7CD"/>
+                    </RowItem>
+                    <RowDivider/>
+                    <RowItem title="Неверно занятия" onPress={() => {
+                    }}>
+                        <Ionicons name="chevron-forward" size={18} color="#C1C7CD"/>
+                    </RowItem>
+                    <RowDivider/>
+                    <RowItem title="Про ограничения по времени" onPress={() => {
+                    }}>
+                        <Ionicons name="chevron-forward" size={18} color="#C1C7CD"/>
+                    </RowItem>
+                </SectionCard>
 
-                    <TouchableOpacity style={styles.optionButton}>
-                        <Ionicons name="moon-outline" size={20} color="#555"/>
-                        <Text style={styles.optionText}>Тема приложения</Text>
-                    </TouchableOpacity>
-                </View>
-
-                <View style={styles.section}>
-                    <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-                        <Ionicons name="log-out-outline" size={20} color="#F73D48"/>
-                        <Text style={styles.logoutText}>Выйти из аккаунта</Text>
-                    </TouchableOpacity>
-                </View>
+                {/* Выход */}
+                <TouchableOpacity style={styles.logoutRow} onPress={handleLogout} activeOpacity={0.8}>
+                    <Ionicons name="log-out-outline" size={18} color="#F73D48"/>
+                    <Text style={styles.logoutText}>Выйти из аккаунта</Text>
+                </TouchableOpacity>
             </ScrollView>
         </ThemedView>
     );
 }
 
+/* --- Вспомогательные компоненты --- */
+
+function InfoTile({icon, title, subtitle, small = false, wide = false}) {
+    return (
+        <TouchableOpacity
+            activeOpacity={0.9}
+            style={[
+                styles.tile,
+                small && styles.tileSmall,
+                wide && styles.tileWide,
+
+            ]}
+        >
+            <View style={styles.tileIcon}>{icon}</View>
+            <View style={{flex: 1}}>
+                <Text style={[styles.tileTitle, small && {fontSize: 13}]}>{title}</Text>
+                {!!subtitle && (
+                    <Text style={[styles.tileSubtitle, small && {fontSize: 12}]} numberOfLines={1}>
+                        {subtitle}
+                    </Text>
+                )}
+            </View>
+        </TouchableOpacity>
+    );
+}
+
+function SectionCard({title, children}) {
+    return (
+        <View style={styles.sectionCard}>
+            <Text style={styles.sectionTitle}>{title}</Text>
+            <View style={styles.sectionBody}>{children}</View>
+        </View>
+    );
+}
+
+function RowItem({title, children, onPress}) {
+    return (
+        <TouchableOpacity style={styles.rowItem} onPress={onPress} activeOpacity={0.7}>
+            <Text style={styles.rowTitle}>{title}</Text>
+            <View style={{marginLeft: 12}}>{children}</View>
+        </TouchableOpacity>
+    );
+}
+
+function RowDivider() {
+    return <View style={styles.rowDivider}/>;
+}
+
+/* --- Стили --- */
+
+const CARD_BG = '#F7F7F7';
+const BORDER = '#E8E8E8';
+const TEXT_DARK = '#333';
+const TEXT_MUTED = '#666';
+
 const styles = StyleSheet.create({
     container: {
-        flex: 1, padding: 15, // backgroundColor: '#f8f9fa',
-        paddingTop: 60,
-    }, scrollView: {
         flex: 1,
-    }, // Первый блок - Профиль
-    profileBlock: {
+        paddingTop: 80,
+        paddingHorizontal: 16,
+    },
+    profileCard: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#F6F6F6',
-        borderRadius: 12,
-        padding: 16,
-        marginBottom: 20,
-        height: 72,
-        borderWidth: 1,
-        borderColor: '#E8E8E8',
+        backgroundColor: CARD_BG,
+        borderRadius: 14,
+        padding: 14,
+        marginBottom: 16,
     },
-    avatarContainer: {
-        marginRight: 16,
-    },
-    avatarPlaceholder: {
-        width: 45,
-        height: 45,
+    avatar: {
+        width: 44,
+        height: 44,
         borderRadius: 12,
         backgroundColor: '#E8E8E8',
+        alignItems: 'center',
         justifyContent: 'center',
+        marginRight: 12,
+    },
+    profileName: {
+        fontSize: 19,
+        fontWeight: '700',
+        color: TEXT_DARK,
+    },
+    profileClass: {
+        fontSize: 15,
+    },
+
+    gridRow: {
+        flexDirection: 'row',
+        gap: 12,
+        marginBottom: 12,
+    },
+    tile: {
+        flex: 1,
+        backgroundColor: CARD_BG,
+        borderRadius: 12,
+        padding: 12,
+        alignItems: 'flex-start',
+        minHeight: 93,
+    },
+    tileSmall: {
+        flex: 1,
+        minHeight: 92,
+    },
+    tileWide: {
+        flex: 2,
+    },
+    tileIcon: {
+        width: 28,
+        height: 28,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 10,
+    },
+    tileTitle: {
+        marginTop: 6,
+        fontSize: 15,
+        fontWeight: '700',
+        color: TEXT_DARK,
+    },
+    tileSubtitle: {
+        fontSize: 13,
+        color: TEXT_MUTED,
+    },
+
+    /* Разделы */
+    sectionCard: {
+        backgroundColor: CARD_BG,
+        borderRadius: 14,
+        padding: 14,
+        marginTop: 12,
+        marginBottom: 12,
+    },
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: '700',
+        color: TEXT_DARK,
+        marginBottom: 8,
+    },
+    sectionBody: {
+        backgroundColor: '#F7F7F7',
+        borderRadius: 12,
+        overflow: 'hidden',
+    },
+    rowItem: {
+        paddingVertical: 14,
+        paddingHorizontal: 14,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         alignItems: 'center',
     },
-    profileInfo: {
-        flex: 1,
+    rowTitle: {
+        fontSize: 15,
+        color: TEXT_DARK,
     },
-    username:
-        {
-            fontSize: 18,
-            fontWeight: 'bold',
-            color: '#333',
-            marginBottom: 4,
-        },
-    class: {
-        fontSize: 14, color: '#F73D48', fontWeight: '600',
+    rowDivider: {
+        height: 1,
+        backgroundColor: '#EFEFEF',
     },
-    verticalSection:
-        {
-            marginBottom: 30, flexDirection: 'row', gap: 16,
-        },
-    classBlock: {
-        backgroundColor: '#F7F7F7', borderRadius: 12, padding: 16, flexDirection: 'column', width: 93, height: 93,
+
+    /* Logout */
+    logoutRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 14,
+        justifyContent: 'center',
+        marginBottom: 24,
     },
-    scheduleBlock: {
-        backgroundColor: '#F7F7F7', borderRadius: 12, padding: 12, // width: '50%',
-        flex: 1, height: 93,
-    },
-    blockHeader: {
-        flexDirection: 'row', alignItems: 'center', marginBottom: 12,
-    },
-    blockTitle: {
-        fontSize: 16, fontWeight: '600', color: '#333', marginLeft: 8,
-    },
-    blockContent: {
-        marginLeft: 32, // Отступ для выравнивания с текстом
-    }, classInfo: {
-        fontSize: 16, fontWeight: '600', color: '#F73D48', marginBottom: 4,
-    }, classSubInfo: {
-        fontSize: 14, color: '#666',
-    }, scheduleInfo: {
-        fontSize: 14, color: '#666', marginBottom: 8,
-    }, timerContainer: {
-        flexDirection: 'row', alignItems: 'center', gap: 8,
-    }, timerText: {
-        fontSize: 16, fontWeight: '600', color: '#F73D48',
-    },
-    section: {
-        marginBottom: 30,
-    }, sectionTitle: {
-        fontSize: 18, fontWeight: '600', color: '#333', marginBottom: 15,
-    }, optionButton: {
-        flexDirection: 'row', alignItems: 'center', paddingVertical: 12,
-    }, optionText: {
-        marginLeft: 10, fontSize: 16, color: '#333',
-    }, logoutButton: {
-        flexDirection: 'row', alignItems: 'center', paddingVertical: 12,
-    }, logoutText: {
-        marginLeft: 10, fontSize: 16, color: '#F73D48', fontWeight: '600',
+    logoutText: {
+        marginLeft: 8,
+        fontSize: 15,
+        fontWeight: '600',
+        color: '#F73D48',
     },
 });

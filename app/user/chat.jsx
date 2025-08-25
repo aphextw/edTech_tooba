@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import {
     View,
     Text,
@@ -7,16 +7,17 @@ import {
     TouchableOpacity,
     StyleSheet,
     SafeAreaView,
-    StatusBar
+    StatusBar,
+    KeyboardAvoidingView,
+    Platform,
+    ActivityIndicator
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import Entypo from "@expo/vector-icons/Entypo";
 
 const ChatScreen = () => {
     const [message, setMessage] = useState('');
-    const scrollViewRef = useRef();
-    const navigation = useNavigation();
-
-    const messages = [
+    const [messages, setMessages] = useState([
         {
             id: 1,
             text: "Привет! Как дела? Чем могу помочь?",
@@ -35,12 +36,64 @@ const ChatScreen = () => {
             time: "12:32",
             isUser: false
         }
-    ];
+    ]);
+    const [isTyping, setIsTyping] = useState(false);
+    const scrollViewRef = useRef();
+    const navigation = useNavigation();
+
+    // Автопрокрутка к последнему сообщению
+    useEffect(() => {
+        scrollViewRef.current?.scrollToEnd({animated: true});
+    }, [messages, isTyping]);
 
     const sendMessage = () => {
         if (message.trim()) {
-            // Здесь логика отправки сообщения
+            const newMessage = {
+                id: messages.length + 1,
+                text: message,
+                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}),
+                isUser: true
+            };
+
+            setMessages([...messages, newMessage]);
             setMessage('');
+
+            // Имитация ответа бота
+            setIsTyping(true);
+            setTimeout(() => {
+                const botResponse = {
+                    id: messages.length + 2,
+                    text: getBotResponse(message),
+                    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}),
+                    isUser: false
+                };
+                setMessages(prev => [...prev, botResponse]);
+                setIsTyping(false);
+            }, 1500);
+        }
+    };
+
+    // Простая логика ответов бота
+    const getBotResponse = (userMessage) => {
+        const lowerMsg = userMessage.toLowerCase();
+
+        if (lowerMsg.includes('привет') || lowerMsg.includes('здравствуй')) {
+            return 'Привет! Чем могу помочь?';
+        } else if (lowerMsg.includes('математик')) {
+            return 'Математика - это интересно! Какой именно вопрос?';
+        } else if (lowerMsg.includes('спасибо')) {
+            return 'Всегда рад помочь! Обращайтесь ещё.';
+        } else if (lowerMsg.includes('как дела')) {
+            return 'У меня всё отлично! Готов помогать вам с учебой.';
+        } else {
+            const responses = [
+                'Интересный вопрос! Давайте разберемся вместе.',
+                'Хм, мне нужно подумать над этим...',
+                'У меня есть несколько идей по этому поводу.',
+                'Да, я могу помочь с этим. Что именно вас интересует?',
+                'Отличный вопрос! Давайте обсудим его подробнее.'
+            ];
+            return responses[Math.floor(Math.random() * responses.length)];
         }
     };
 
@@ -55,7 +108,7 @@ const ChatScreen = () => {
             <View style={styles.chatHeader}>
                 <View style={styles.headerContent}>
                     <TouchableOpacity style={styles.backButton} onPress={goBack}>
-                        <Text style={styles.backText}>←</Text>
+                        <Entypo name="chevron-left" size={30} color="black"/>
                     </TouchableOpacity>
                     <View style={styles.chatInfo}>
                         <Text style={styles.chatTitle}>Чат джпт</Text>
@@ -65,50 +118,70 @@ const ChatScreen = () => {
                 </View>
             </View>
 
-            {/* Область сообщений */}
-            <ScrollView
-                ref={scrollViewRef}
-                style={styles.messagesContainer}
-                contentContainerStyle={styles.messagesContent}
+            <KeyboardAvoidingView
+                style={styles.flex1}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                keyboardVerticalOffset={90}
             >
-                {messages.map((msg) => (
-                    <View
-                        key={msg.id}
-                        style={[
-                            styles.messageBubble,
-                            msg.isUser ? styles.userMessage : styles.botMessage
-                        ]}
-                    >
-                        <Text style={[
-                            styles.messageText,
-                            msg.isUser ? styles.userMessageText : styles.botMessageText
-                        ]}>
-                            {msg.text}
-                        </Text>
-                        <Text style={[
-                            styles.messageTime,
-                            msg.isUser ? styles.userMessageTime : styles.botMessageTime
-                        ]}>
-                            {msg.time}
-                        </Text>
-                    </View>
-                ))}
-            </ScrollView>
+                <ScrollView
+                    ref={scrollViewRef}
+                    style={styles.messagesContainer}
+                    contentContainerStyle={styles.messagesContent}
+                >
+                    {messages.map((msg) => (
+                        <View
+                            key={msg.id}
+                            style={[
+                                styles.messageBubble,
+                                msg.isUser ? styles.userMessage : styles.botMessage
+                            ]}
+                        >
+                            <Text style={[
+                                styles.messageText,
+                                msg.isUser ? styles.userMessageText : styles.botMessageText
+                            ]}>
+                                {msg.text}
+                            </Text>
+                            <Text style={[
+                                styles.messageTime,
+                                msg.isUser ? styles.userMessageTime : styles.botMessageTime
+                            ]}>
+                                {msg.time}
+                            </Text>
+                        </View>
+                    ))}
 
-            <View style={styles.inputContainer}>
-                <View style={styles.inputWrapper}>
-                    <TextInput
-                        style={styles.textInput}
-                        placeholder="Cообщение"
-                        placeholderTextColor="#16161680"
-                        value={message}
-                        onChangeText={setMessage}
-                    />
-                    <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
-                        <Text style={styles.sendText}>↑</Text>
-                    </TouchableOpacity>
+                    {isTyping && (
+                        <View style={[styles.messageBubble, styles.botMessage]}>
+                            <View style={styles.typingIndicator}>
+                                <View style={styles.typingDot}></View>
+                                <View style={styles.typingDot}></View>
+                                <View style={styles.typingDot}></View>
+                            </View>
+                        </View>
+                    )}
+                </ScrollView>
+
+                <View style={styles.inputContainer}>
+                    <View style={styles.inputWrapper}>
+                        <TextInput
+                            style={styles.textInput}
+                            placeholder="Cообщение"
+                            placeholderTextColor="#16161680"
+                            value={message}
+                            onChangeText={setMessage}
+                            onSubmitEditing={sendMessage}
+                        />
+                        <TouchableOpacity
+                            style={[styles.sendButton, !message.trim() && styles.sendButtonDisabled]}
+                            onPress={sendMessage}
+                            disabled={!message.trim()}
+                        >
+                            <Text style={styles.sendText}>↑</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-            </View>
+            </KeyboardAvoidingView>
         </SafeAreaView>
     );
 };
@@ -116,12 +189,16 @@ const ChatScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginTop: 20,
         backgroundColor: '#FFFFFF',
+    },
+    flex1: {
+        flex: 1,
     },
     chatHeader: {
         width: '100%',
-        height: 60,
+        paddingTop: 50,
+        paddingBottom: 10,
+        // height: 60,
         backgroundColor: '#F1F3F6',
         justifyContent: 'center',
         borderBottomWidth: 1,
@@ -239,10 +316,25 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    sendButtonDisabled: {
+        backgroundColor: '#CCCCCC',
+    },
     sendText: {
         fontSize: 20,
         color: '#FFFFFF',
         fontWeight: 'bold',
+    },
+    typingIndicator: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        height: 20,
+    },
+    typingDot: {
+        width: 6,
+        height: 6,
+        borderRadius: 3,
+        backgroundColor: '#888',
+        marginHorizontal: 2,
     },
 });
 
