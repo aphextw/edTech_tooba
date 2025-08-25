@@ -11,7 +11,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 export default function TabLayout() {
-    const colorScheme = useColorScheme();
+    // const colorScheme = useColorScheme();
 
     return (
         <Tabs
@@ -25,6 +25,7 @@ export default function TabLayout() {
                     fontSize: 12,
                 },
                 tabBarStyle: {
+                    backgroundColor: "#fff",
                     shadowColor: "#000",
                     elevation: 5,
                     height: 87,

@@ -7,10 +7,11 @@ import {
     TextInput,
     TouchableOpacity,
     Image,
-    useWindowDimensions,
+    useWindowDimensions, Platform,
 } from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import SearchRow from "../../components/searchRow";
+import {useRouter} from "expo-router";
 
 // Mock data for the view
 const recommendations = [
@@ -20,6 +21,8 @@ const recommendations = [
     {id: '4', emoji: '🌍', title: 'География', subtitle: 'Изучить карту мира'},
     {id: '5', emoji: '📖', title: 'Литература', subtitle: 'Прочитать рассказы Чехова'},
 ];
+
+const router = useRouter();
 
 const partners = [
     {id: '1', title: 'ЕГЭ-Центр', logo: 'ege-center'},
@@ -45,62 +48,76 @@ export default function StudyView() {
                 style={styles.container}
                 contentContainerStyle={styles.contentContainer}
             >
-                <SearchRow/>
+                <SearchRow onBell={() => {
+                    router.replace("./notification")
+                }}/>
                 {/* Search Row */}
 
                 <View style={styles.divider}/>
 
-                {/* Recommendations Section */}
-                <SectionCardGray
-                    title="Рекомендации"
-                    subtitle="Рекомендуем подготовиться к контрольной работе пройдя тест"
-                    trailingEmoji="💡"
-                >
-                    {/* Two recommendation tiles in a row */}
-                    <View style={styles.recommendationRow}>
-                        {recommendations.slice(0, 2).map(rec => (
-                            <RecommendationTile key={rec.id} rec={rec}/>
-                        ))}
-                    </View>
 
-                    <ExpandRow
-                        title={`Ещё ${hiddenRecsCount} предметов`}
-                        subtitle="Рекомендации по остальным предметам"
-                        isExpanded={recsExpanded}
-                        onToggle={() => setRecsExpanded(!recsExpanded)}
-                    />
-                </SectionCardGray>
-
-                {/* ЕГЭ Preparation Section */}
-                <SectionCardGray
-                    title="Подготовка к ЕГЭ"
-                    subtitle="Школы подготовки к ЕГЭ по литературе"
-                    trailingEmoji="📚"
-                >
-                    <View style={styles.partnersRow}>
-                        {partners.map(partner => (
-                            <PartnerTile key={partner.id} partner={partner}/>
-                        ))}
-                    </View>
-                </SectionCardGray>
-
-                {/* Podcasts Section */}
-                <SectionCardGray
-                    title="Подкасты"
-                    subtitle="Красивый голос и полезная информация"
-                    trailingEmoji="🎙"
-                >
-                    <ScrollView
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        style={styles.horizontalScroll}
-                        contentContainerStyle={styles.podcastsContent}
+                <View style={{
+                    ...Platform.select({
+                        web: {
+                            justifyContent: 'center',
+                            flexDirection: 'row',
+                            flexWrap: 'wrap',
+                            gap: 70,
+                        },
+                    })
+                }}>
+                    {/* Recommendations Section */}
+                    <SectionCardGray
+                        title="Рекомендации"
+                        subtitle="Рекомендуем подготовиться к контрольной работе пройдя тест"
+                        trailingEmoji="💡"
                     >
-                        {podcasts.map(podcast => (
-                            <PodcastTile key={podcast.id} podcast={podcast} width={width}/>
-                        ))}
-                    </ScrollView>
-                </SectionCardGray>
+                        {/* Two recommendation tiles in a row */}
+                        <View style={styles.recommendationRow}>
+                            {recommendations.slice(0, 2).map(rec => (
+                                <RecommendationTile key={rec.id} rec={rec}/>
+                            ))}
+                        </View>
+
+                        <ExpandRow
+                            title={`Ещё ${hiddenRecsCount} предметов`}
+                            subtitle="Рекомендации по остальным предметам"
+                            isExpanded={recsExpanded}
+                            onToggle={() => setRecsExpanded(!recsExpanded)}
+                        />
+                    </SectionCardGray>
+
+                    {/* ЕГЭ Preparation Section */}
+                    <SectionCardGray
+                        title="Подготовка к ЕГЭ"
+                        subtitle="Школы подготовки к ЕГЭ по литературе"
+                        trailingEmoji="📚"
+                    >
+                        <View style={styles.partnersRow}>
+                            {partners.map(partner => (
+                                <PartnerTile key={partner.id} partner={partner}/>
+                            ))}
+                        </View>
+                    </SectionCardGray>
+
+                    {/* Podcasts Section */}
+                    <SectionCardGray
+                        title="Подкасты"
+                        subtitle="Красивый голос и полезная информация"
+                        trailingEmoji="🎙"
+                    >
+                        <ScrollView
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                            style={styles.horizontalScroll}
+                            contentContainerStyle={styles.podcastsContent}
+                        >
+                            {podcasts.map(podcast => (
+                                <PodcastTile key={podcast.id} podcast={podcast} width={width}/>
+                            ))}
+                        </ScrollView>
+                    </SectionCardGray>
+                </View>
             </ScrollView>
         </>
     );
@@ -222,6 +239,11 @@ const styles = StyleSheet.create({
         borderRadius: 18,
         padding: 16,
         marginBottom: 20,
+        ...Platform.select({
+            web: {
+                width: 550,
+            },
+        })
     },
     sectionHeader: {
         flexDirection: 'row',
@@ -334,7 +356,7 @@ const styles = StyleSheet.create({
     podcastCover: {
         width: '100%',
         height: 120,
-        backgroundColor: '#F7F7F7',
+        backgroundColor: '#ffffff',
         borderRadius: 16,
         justifyContent: 'center',
         alignItems: 'center',

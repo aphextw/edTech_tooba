@@ -111,8 +111,7 @@ const ChatScreen = () => {
                         <Entypo name="chevron-left" size={30} color="black"/>
                     </TouchableOpacity>
                     <View style={styles.chatInfo}>
-                        <Text style={styles.chatTitle}>Чат джпт</Text>
-                        <Text style={styles.status}>Онлайн</Text>
+                        <Text style={styles.chatTitle}>ИИ ассистент</Text>
                     </View>
                     <View style={styles.placeholder}/>
                 </View>
@@ -313,14 +312,14 @@ const styles = StyleSheet.create({
         height: 44,
         backgroundColor: '#161616',
         borderRadius: 22,
-        justifyContent: 'center',
         alignItems: 'center',
     },
     sendButtonDisabled: {
         backgroundColor: '#CCCCCC',
     },
     sendText: {
-        fontSize: 20,
+        textAlign: 'center',
+        fontSize: 28,
         color: '#FFFFFF',
         fontWeight: 'bold',
     },

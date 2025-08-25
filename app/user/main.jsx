@@ -9,7 +9,7 @@ import {
     FlatList,
     Dimensions,
     StyleSheet,
-    SafeAreaView,
+    SafeAreaView, Platform,
 } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import Entypo from '@expo/vector-icons/Entypo';
@@ -40,33 +40,47 @@ const MainView = () => {
                     {/* «Спросите что-нибудь» */}
                     <AskSection questionText={questionText} setQuestionText={setQuestionText} router={router}/>
 
-                    <View style={{paddingHorizontal: 12}}>
+                    <View style={{
+                        paddingHorizontal: 12,
+
+                    }}>
                         {/* Заголовок */}
                         <TitleHero/>
 
                         {/* Факт дня */}
                         <FactOfTheDayCard/>
 
-                        {/* Календарь занятий */}
-                        <LessonsCalendarCard
-                            selectedWeekday={selectedWeekday}
-                            setSelectedWeekday={setSelectedWeekday}
-                            selectedDay={selectedDay}
-                            setSelectedDay={setSelectedDay}
-                        />
+                        <View style={{
+                            ...Platform.select({
+                                web: {
+                                    justifyContent: 'center',
+                                    flexDirection: 'row',
+                                    flexWrap: 'wrap',
+                                    gap: 70,
+                                },
+                            })
+                        }}>
+                            {/* Календарь занятий */}
+                            <LessonsCalendarCard
+                                selectedWeekday={selectedWeekday}
+                                setSelectedWeekday={setSelectedWeekday}
+                                selectedDay={selectedDay}
+                                setSelectedDay={setSelectedDay}
+                            />
 
-                        {/* Учебные материалы */}
-                        <MaterialsCarousel/>
+                            {/* Учебные материалы */}
+                            <MaterialsCarousel/>
 
-                        {/* Оценки */}
-                        <GradesCard router={router}/>
+                            {/* Оценки */}
+                            <GradesCard router={router}/>
 
-                        {/* Домашняя работа */}
-                        <HomeworkCard/>
+                            {/* Домашняя работа */}
+                            <HomeworkCard/>
 
 
-                        {/* Цифровизация лекций */}
-                        <OCRCard/>
+                            {/* Цифровизация лекций */}
+                            <OCRCard/>
+                        </View>
                     </View>
                 </ThemedView>
             </ScrollView>
@@ -496,11 +510,15 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: '#FFFFFF',
         flex: 1,
+        ...Platform.select({
+            web: {},
+        })
     },
     scrollView: {
         flex: 1,
     },
     content: {
+        backgroundColor: "#fff",
         // paddingHorizontal: 16,
         paddingBottom: 10,
         paddingTop: 8,
@@ -513,6 +531,7 @@ const styles = StyleSheet.create({
         lineHeight: 36, // добавьте lineHeight для лучшего отображения
     },
     titleText: {
+        color: "#000",
         fontSize: 32,
         fontWeight: '800',
         lineHeight: 38,
@@ -526,6 +545,12 @@ const styles = StyleSheet.create({
         marginBottom: 16,
         padding: 12,
         paddingVertical: 20,
+
+        ...Platform.select({
+            web: {
+                width: 550,
+            },
+        }),
     },
     searchInputContainer: {
         flex: 1,

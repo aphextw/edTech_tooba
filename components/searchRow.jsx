@@ -1,7 +1,7 @@
 import {StyleSheet, TextInput, TouchableOpacity, View} from "react-native";
 import Octicons from "@expo/vector-icons/Octicons";
 
-const SearchRow = ({searchText, setSearchText, router}) => (
+const SearchRow = ({searchText, setSearchText, router, onBell}) => (
     <View style={styles.searchRow}>
         <View style={styles.searchInputContainer}>
             <TextInput
@@ -13,9 +13,7 @@ const SearchRow = ({searchText, setSearchText, router}) => (
             />
         </View>
 
-        <TouchableOpacity style={styles.bellButton} onPress={() => {
-            router.replace("./notification")
-        }}>
+        <TouchableOpacity style={styles.bellButton} onPress={onBell}>
             <Octicons name="bell-fill" size={24} style={{transform: [{rotate: '45deg'}]}} color="black"/>
         </TouchableOpacity>
     </View>

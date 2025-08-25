@@ -189,6 +189,7 @@ const TEXT_MUTED = '#666';
 
 const styles = StyleSheet.create({
     container: {
+        backgroundColor: "#fff",
         flex: 1,
         paddingTop: 80,
         paddingHorizontal: 16,
